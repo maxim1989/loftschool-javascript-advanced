@@ -7,6 +7,9 @@
  Посмотрите как работает forEach и повторите это поведение для массива, который будет передан в параметре array
  */
 function forEach(array, fn) {
+    for (let i = 0; i < array.length; i++) {
+        fn(array[i], i, array);
+    }
 }
 
 /*
@@ -16,6 +19,13 @@ function forEach(array, fn) {
  Посмотрите как работает map и повторите это поведение для массива, который будет передан в параметре array
  */
 function map(array, fn) {
+    const resultArray = [];
+
+    array.forEach((item, i, arr) => {
+        resultArray.push(fn(arr[i], i, arr));
+    });
+
+    return resultArray;
 }
 
 /*
@@ -25,6 +35,14 @@ function map(array, fn) {
  Посмотрите как работает reduce и повторите это поведение для массива, который будет передан в параметре array
  */
 function reduce(array, fn, initial) {
+    const startIndex = initial ? 0 : 1;
+    let previousValue = initial ? initial : array[0];
+
+    for (let i = startIndex; i < array.length; i++) {
+        previousValue = fn(previousValue, array[i], i, array);
+    }
+
+    return previousValue;
 }
 
 /*
@@ -36,6 +54,7 @@ function reduce(array, fn, initial) {
    upperProps({ name: 'Сергей', lastName: 'Петров' }) вернет ['NAME', 'LASTNAME']
  */
 function upperProps(obj) {
+    return Object.keys(obj).map(item => item.toUpperCase());
 }
 
 /*
@@ -45,6 +64,16 @@ function upperProps(obj) {
  Посмотрите как работает slice и повторите это поведение для массива, который будет передан в параметре array
  */
 function slice(array, from, to) {
+    if (from !== 0 && !from) {
+        return array.map(item => item);
+    }
+    if (to !== 0 && !to) {
+        to = array.length;
+    }
+    from = (from >= 0 ? from : array.length + from);
+    to = (to >= 0 ? to : array.length + to);
+
+    return array.filter((item, i) => from <= i && i < to);
 }
 
 /*
@@ -54,6 +83,13 @@ function slice(array, from, to) {
  Proxy должен перехватывать все попытки записи значений свойств и возводить это значение в квадрат
  */
 function createProxy(obj) {
+    return new Proxy(obj, {
+        set(target, prop, value) {
+            target[prop] = Math.pow(value, 2);
+
+            return true;
+        }
+    });
 }
 
 export {
