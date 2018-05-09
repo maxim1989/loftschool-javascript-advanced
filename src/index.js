@@ -13,7 +13,7 @@
 function createDivWithText(text) {
     const div = document.createElement('div');
 
-    div.innerHTML = text;
+    div.textContent = text;
 
     return div;
 }
@@ -106,7 +106,7 @@ function findError(where) {
  */
 function deleteTextNodes(where) {
     for (let i = 0; i < where.childNodes.length; i++) {
-        if (where.childNodes[i].nodeName === '#text') {
+        if (where.childNodes[i].nodeType === 3) {
             where.childNodes[i].remove();
         }
     }
@@ -128,19 +128,28 @@ function deleteTextNodes(where) {
    должно быть преобразовано в <span><div><b></b></div><p></p></span>
  */
 function deleteTextNodesRecursive(where) {
-    let i = 0;
+    const stack = [];
 
-    while (i < where.childNodes.length) {
-        if (where.childNodes[i].nodeName === '#text') {
-            where.childNodes[i].remove();
-        } else {
-            if (where.childNodes[i].childNodes.length > 0) {
-                deleteTextNodesRecursive(where.childNodes[i]);
-            }
-            i++;
-        }
+    for (let item of where.childNodes) {
+        stack.push(item);
     }
+    let i = stack.length;
 
+    while (i !== 0) {
+        let removedNode = stack.pop();
+
+        if (removedNode.nodeType === 3) {
+            removedNode.remove();
+        } else {
+            if (removedNode.childNodes.length > 0) {
+                for (let item of removedNode.childNodes) {
+                    stack.push(item);
+                }
+            }
+        }
+        i = stack.length;
+    }
+    
     return where;
 }
 
@@ -164,32 +173,43 @@ function deleteTextNodesRecursive(where) {
      texts: 3
    }
  */
-function collectDOMStat(root, ...rest) {
-    const statistics = (rest.length === 0 ? {
+function collectDOMStat(root) {
+    const stack = [],
+        statistics = {
             tags: {},
             classes: {},
             texts: 0
-        } : rest[0]),
-        classes = (root.className.length === 0 ? [] : root.className.split(' '));
-    
-    if (rest.length !== 0) {
-        statistics.tags[root.nodeName] ? statistics.tags[root.nodeName] += 1 : statistics.tags[root.nodeName] = 1;
-        classes.forEach(item => {
-            statistics.classes[item] ? statistics.classes[item] += 1 : statistics.classes[item] = 1;
-        });
+        };
+
+    for (let item of root.childNodes) {
+        stack.push(item);
     }
+    let i = stack.length;
 
-    let i = 0;
+    while (i !== 0) {
+        let removedNode = stack.pop();
 
-    while (i < root.childNodes.length) {
-        if (root.childNodes[i].nodeName === '#text') {
+        if (removedNode.nodeType === 3) {
+            removedNode.remove();
             statistics.texts += 1;
         } else {
-            if (root.childNodes[i].childNodes.length > 0) {
-                collectDOMStat(root.childNodes[i], statistics);
+            let classes = (removedNode.className.length === 0 ? [] : removedNode.className.split(' '));
+
+            if (statistics.tags[removedNode.nodeName]) {
+                statistics.tags[removedNode.nodeName] += 1;
+            } else {
+                statistics.tags[removedNode.nodeName] = 1;
+            }
+            classes.forEach(item => {
+                statistics.classes[item] ? statistics.classes[item] += 1 : statistics.classes[item] = 1;
+            });
+            if (removedNode.childNodes.length > 0) {
+                for (let item of removedNode.childNodes) {
+                    stack.push(item);
+                }
             }
         }
-        i++;
+        i = stack.length;
     }
 
     return statistics;
