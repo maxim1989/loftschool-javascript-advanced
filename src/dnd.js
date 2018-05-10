@@ -16,6 +16,25 @@
    homeworkContainer.appendChild(newDiv);
  */
 const homeworkContainer = document.querySelector('#homework-container');
+let counter = 1,
+    key = null;
+
+homeworkContainer.style.height = '1000px';
+homeworkContainer.style.border = '1px solid black';
+homeworkContainer.style.position = 'relative';
+
+homeworkContainer.addEventListener('dragover', (e) => {
+    e.preventDefault();
+});
+
+homeworkContainer.addEventListener('drop', (e) => {
+    e.preventDefault();
+    const data = e.dataTransfer.getData(key),
+        div = document.getElementById(data);
+
+    div.style.left = `${e.layerX}px`;
+    div.style.top = `${e.layerY}px`;
+});
 
 /*
  Функция должна создавать и возвращать новый div с классом draggable-div и случайными размерами/цветом/позицией
@@ -27,6 +46,24 @@ const homeworkContainer = document.querySelector('#homework-container');
    homeworkContainer.appendChild(newDiv);
  */
 function createDiv() {
+    const div = document.createElement('div'),
+        colors = ['#F0F8FF', '#FAEBD7', '#00FFFF', '#7FFFD4',
+            '#F0FFFF', '#F5F5DC', '#FFE4C4', '#000000',
+            '#FFEBCD', '#696969'],
+        randomColor = colors[Math.floor(Math.random()*colors.length)];
+
+    div.style.backgroundColor = randomColor;
+    div.style.position = 'relative';
+    div.style.top = '100px';
+    div.style.left = '150px';
+    div.style.width = '150px';
+    div.style.height = '100px';
+    div.className = 'draggable-div';
+    div.draggable = true;
+    div.id = `element-${counter}`;
+    counter++;
+
+    return div;
 }
 
 /*
@@ -38,6 +75,9 @@ function createDiv() {
    addListeners(newDiv);
  */
 function addListeners(target) {
+    target.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData(`key-${e.target.id}`, e.target.id);
+    });
 }
 
 let addDivButton = homeworkContainer.querySelector('#addDiv');
