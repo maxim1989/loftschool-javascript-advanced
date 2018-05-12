@@ -19,7 +19,7 @@ const homeworkContainer = document.querySelector('#homework-container');
 let counter = 1,
     key = null;
 
-homeworkContainer.style.height = '1000px';
+homeworkContainer.style.height = '600px';
 homeworkContainer.style.border = '1px solid black';
 homeworkContainer.style.position = 'relative';
 
@@ -31,10 +31,6 @@ homeworkContainer.addEventListener('drop', (e) => {
     e.preventDefault();
     const data = e.dataTransfer.getData(key),
         div = document.getElementById(data);
-    
-    console.log('key =', key);
-    console.log('data =', data);
-    console.log('div =', div);
 
     div.style.left = `${e.layerX}px`;
     div.style.top = `${e.layerY}px`;
@@ -57,7 +53,8 @@ function createDiv() {
         randomColor = colors[Math.floor(Math.random()*colors.length)];
 
     div.style.backgroundColor = randomColor;
-    div.style.position = 'relative';
+    div.style.display = 'inline-block';
+    div.style.position = 'absolute';
     div.style.top = '100px';
     div.style.left = '150px';
     div.style.width = '150px';
