@@ -71,16 +71,11 @@ function emulateClick(target) {
    функцию только если кликнули на кнопку (элемент с тегом button)
  */
 function delegate(target, fn) {
-    const buttons = target.querySelectorAll('button'),
-        userEvent = new Event('onButtonClick', { bubbles: true });
-
-    target.addEventListener('onButtonClick', fn)
-
-    for (let btn of buttons) {
-        btn.addEventListener('click', function() {
-            this.dispatchEvent(userEvent);
-        })
-    }
+    target.addEventListener('click', (e) => {
+        if (e.target.tagName === 'BUTTON') {
+            fn();
+        }
+    })
 }
 
 /*
