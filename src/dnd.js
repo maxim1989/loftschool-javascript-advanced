@@ -84,6 +84,8 @@ function addListeners(target) {
 
 let addDivButton = homeworkContainer.querySelector('#addDiv');
 
+addDivButton.display = 'block';
+
 addDivButton.addEventListener('click', function() {
     // создать новый div
     const div = createDiv();
