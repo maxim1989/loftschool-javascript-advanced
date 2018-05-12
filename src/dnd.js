@@ -31,6 +31,10 @@ homeworkContainer.addEventListener('drop', (e) => {
     e.preventDefault();
     const data = e.dataTransfer.getData(key),
         div = document.getElementById(data);
+    
+    console.log('key =', key);
+    console.log('data =', data);
+    console.log('div =', div);
 
     div.style.left = `${e.layerX}px`;
     div.style.top = `${e.layerY}px`;
@@ -77,6 +81,7 @@ function createDiv() {
 function addListeners(target) {
     target.addEventListener('dragstart', (e) => {
         e.dataTransfer.setData(`key-${e.target.id}`, e.target.id);
+        key = `key-${e.target.id}`;
     });
 }
 
