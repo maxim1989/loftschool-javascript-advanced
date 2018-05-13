@@ -16,8 +16,7 @@
    homeworkContainer.appendChild(newDiv);
  */
 const homeworkContainer = document.querySelector('#homework-container');
-let counter = 1,
-    key = null;
+let counter = 1;
 
 homeworkContainer.style.height = '600px';
 homeworkContainer.style.border = '1px solid black';
@@ -29,7 +28,7 @@ homeworkContainer.addEventListener('dragover', (e) => {
 
 homeworkContainer.addEventListener('drop', (e) => {
     e.preventDefault();
-    const data = e.dataTransfer.getData(key),
+    const data = e.dataTransfer.getData('text'),
         div = document.getElementById(data);
 
     div.style.left = `${e.layerX}px`;
@@ -77,8 +76,7 @@ function createDiv() {
  */
 function addListeners(target) {
     target.addEventListener('dragstart', (e) => {
-        e.dataTransfer.setData(`key-${e.target.id}`, e.target.id);
-        key = `key-${e.target.id}`;
+        e.dataTransfer.setData('text', e.target.id);
     });
 }
 
