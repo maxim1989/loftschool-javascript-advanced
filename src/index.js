@@ -50,9 +50,7 @@ function loadAndSortTowns() {
                 }
             ));
         };
-        xhr.onerror = function(error) {
-            reject(error);
-        }
+        xhr.onerror = reject;
         xhr.send();
     })
 }
