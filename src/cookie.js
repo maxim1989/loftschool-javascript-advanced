@@ -43,10 +43,120 @@ const addButton = homeworkContainer.querySelector('#add-button');
 // таблица со списком cookie
 const listTable = homeworkContainer.querySelector('#list-table tbody');
 
+/**
+ * Отрисовка таблицы кук при первичной загрузке.
+ */
+window.addEventListener('load', () => {
+    filter();
+});
+
 filterNameInput.addEventListener('keyup', function() {
     // здесь можно обработать нажатия на клавиши внутри текстового поля для фильтрации cookie
+    filter();
 });
 
 addButton.addEventListener('click', () => {
     // здесь можно обработать нажатие на кнопку "добавить cookie"
+    const cookies = prepareCookies();
+
+    // Если добавляется cookie, с именем уже существующией cookie
+    if (addNameInput.value in cookies) {
+        deleteRow(addNameInput.value);
+    }
+
+    document.cookie = `${addNameInput.value}=${addValueInput.value}`;
+
+    if (filterNameInput.value.length === 0 ||
+        addNameInput.value.indexOf(filterNameInput.value) >= 0 ||
+        addValueInput.value.indexOf(filterNameInput.value) >= 0) {
+
+        listTable.appendChild(createTr(addNameInput.value, addValueInput.value));
+    }
+    // addNameInput.value = ''; // todo test fail
+    // addValueInput.value = ''; // todo test fail
 });
+
+/**
+ * Делегировать удаление куки с BUTTON на tbody
+ */
+listTable.addEventListener('click', e => {
+    if (e.target.nodeName === 'BUTTON') {
+        deleteRow(e.target.dataset.key);
+    }
+});
+
+/**
+ * Удалить куку из таблицы и из хранилища кук.
+ * @param {string} key 
+ */
+function deleteRow(key) {
+    document.cookie = `${key}=; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+    listTable.querySelector(`.cookie-${key}`).remove();
+}
+
+/**
+ * Фильтровать куки и добавить в таблицу.
+ */
+function filter() {
+    const cookies = prepareCookies();
+    
+    listTable.innerHTML = '';
+
+    for (let c in cookies) {
+        if (cookies.hasOwnProperty(c)) {
+            if (filterNameInput.value.length === 0 ||
+                c.indexOf(filterNameInput.value) >= 0 ||
+                cookies[c].indexOf(filterNameInput.value) >= 0) {
+                
+                listTable.appendChild(createTr(c, cookies[c]));
+            }
+        }
+    }
+}
+
+/**
+ * Преобразовать куки в объект.
+ */
+function prepareCookies() {
+    const splitCookiesBySpace = document.cookie.split('; '),
+        result = {};
+    
+    splitCookiesBySpace.forEach(item => {
+        const [key, value] = item.split('=');
+
+        result[key] = value;
+    });
+
+    return result;
+
+}
+
+function createTd(text) {
+    const td = document.createElement('td');
+
+    td.textContent = text;
+
+    return td;
+}
+
+function createTr(key, value) {
+    const tr = document.createElement('tr');
+
+    tr.className = `cookie-${key}`;
+    tr.appendChild(createTd(key));
+    tr.appendChild(createTd(value));
+    tr.appendChild(createButton(key));
+
+    return tr;
+}
+
+function createButton(key) {
+    const td = createTd(),
+        button = document.createElement('button');
+
+    td.appendChild(button);
+    button.textContent = 'Delete';
+    button.dataset.key = key;
+
+    return button;
+}
