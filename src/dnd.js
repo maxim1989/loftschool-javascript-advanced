@@ -16,7 +16,9 @@
    homeworkContainer.appendChild(newDiv);
  */
 const homeworkContainer = document.querySelector('#homework-container');
-let counter = 1;
+let counter = 1,
+    xOnDragStart = 0,
+    yOnDragStart = 0;
 
 homeworkContainer.style.height = '600px';
 homeworkContainer.style.border = '1px solid black';
@@ -29,10 +31,12 @@ homeworkContainer.addEventListener('dragover', (e) => {
 homeworkContainer.addEventListener('drop', (e) => {
     e.preventDefault();
     const data = e.dataTransfer.getData('text'),
-        div = document.getElementById(data);
+        div = document.getElementById(data),
+        left = xOnDragStart < e.clientX ? parseInt(div.style.left) + Math.abs(xOnDragStart - e.clientX): parseInt(div.style.left) - Math.abs(xOnDragStart - e.clientX),
+        top = yOnDragStart < e.clientY ? parseInt(div.style.top) + Math.abs(yOnDragStart - e.clientY) : parseInt(div.style.top) - Math.abs(yOnDragStart - e.clientY);
 
-    div.style.left = `${e.layerX}px`;
-    div.style.top = `${e.layerY}px`;
+    div.style.left = `${left}px`;
+    div.style.top = `${top}px`;
 });
 
 /*
@@ -77,6 +81,8 @@ function createDiv() {
 function addListeners(target) {
     target.addEventListener('dragstart', (e) => {
         e.dataTransfer.setData('text', e.target.id);
+        xOnDragStart = e.clientX;
+        yOnDragStart = e.clientY;
     });
 }
 
