@@ -16,6 +16,32 @@
    homeworkContainer.appendChild(newDiv);
  */
 const homeworkContainer = document.querySelector('#homework-container');
+let counter = 1,
+    xOnDragStart = 0,
+    yOnDragStart = 0;
+
+homeworkContainer.style.height = '900px';
+homeworkContainer.style.border = '1px solid black';
+homeworkContainer.style.position = 'relative';
+
+homeworkContainer.addEventListener('dragover', (e) => {
+    e.preventDefault();
+});
+
+homeworkContainer.addEventListener('drop', (e) => {
+    e.preventDefault();
+    const data = e.dataTransfer.getData('text'),
+        div = document.getElementById(data),
+        left = (xOnDragStart < e.clientX ?
+            parseInt(div.style.left) + Math.abs(xOnDragStart - e.clientX) :
+            parseInt(div.style.left) - Math.abs(xOnDragStart - e.clientX)),
+        top = (yOnDragStart < e.clientY ?
+            parseInt(div.style.top) + Math.abs(yOnDragStart - e.clientY) :
+            parseInt(div.style.top) - Math.abs(yOnDragStart - e.clientY));
+
+    div.style.left = `${left}px`;
+    div.style.top = `${top}px`;
+});
 
 /*
  Функция должна создавать и возвращать новый div с классом draggable-div и случайными размерами/цветом/позицией
@@ -27,6 +53,28 @@ const homeworkContainer = document.querySelector('#homework-container');
    homeworkContainer.appendChild(newDiv);
  */
 function createDiv() {
+    const div = document.createElement('div'),
+        colors = ['#CD5C5C', '#F08080', '#FA8072', '#E9967A', '#FFA07A', '#DC143C', '#FF0000', '#B22222', '#8B0000',
+            '#ADFF2F', '#7FFF00', '#7CFC00', '#00FF00', '#32CD32', '#98FB98', '#90EE90', '#00FA9A', '#00FF7F',
+            '#3CB371', '#2E8B57', '#228B22', '#008000', '#006400', '#9ACD32', '#6B8E23', '#808000', '#556B2F',
+            '#66CDAA', '#8FBC8F', '#20B2AA', '#008B8B', '#008080'
+        ],
+        randomColor = colors[Math.floor(Math.random()*colors.length)];
+
+    console.log(screen);
+    div.style.backgroundColor = randomColor;
+    div.style.display = 'inline-block';
+    div.style.position = 'absolute';
+    div.style.top = `${Math.floor(Math.random()*(900 - 100))}px`;
+    div.style.left = `${Math.floor(Math.random()*(screen.width - 150))}px`;
+    div.style.width = `${Math.floor(Math.random()*(150))}px`;
+    div.style.height = `${Math.floor(Math.random()*(100))}px`;
+    div.className = 'draggable-div';
+    div.draggable = true;
+    div.id = `element-${counter}`;
+    counter++;
+
+    return div;
 }
 
 /*
@@ -38,9 +86,16 @@ function createDiv() {
    addListeners(newDiv);
  */
 function addListeners(target) {
+    target.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('text', e.target.id);
+        xOnDragStart = e.clientX;
+        yOnDragStart = e.clientY;
+    });
 }
 
 let addDivButton = homeworkContainer.querySelector('#addDiv');
+
+addDivButton.style.display = 'block';
 
 addDivButton.addEventListener('click', function() {
     // создать новый div
